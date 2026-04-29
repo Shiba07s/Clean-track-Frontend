@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+ * CleanTrack Design System
+ * Green eco-friendly theme for pollution reporting app
+ * All colors in HSL format
+ */
+
+@layer base {
+  :root {
+    /* Main background and text */
+    --background: 120 20% 98%;
+    --foreground: 150 30% 10%;
+
+    /* Cards */
+    --card: 0 0% 100%;
+    --card-foreground: 150 30% 10%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 30% 10%;
+
+    /* Primary green brand color */
+    --primary: 152 60% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - lighter green */
+    --secondary: 140 30% 94%;
+    --secondary-foreground: 150 30% 15%;
+
+    /* Muted surfaces */
+    --muted: 120 15% 95%;
+    --muted-foreground: 150 10% 45%;
+
+    /* Accent - warm green */
+    --accent: 142 40% 90%;
+    --accent-foreground: 150 40% 20%;
+
+    /* Destructive - red for rejected */
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Warning - amber for pending */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Success - bright green for approved */
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    /* Borders and inputs */
+    --border: 140 20% 88%;
+    --input: 140 20% 88%;
+    --ring: 152 60% 36%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Simple utility classes for the project */
+@layer components {
+  .container-page {
+    @apply max-w-6xl mx-auto px-4 py-8;
+  }
+}
