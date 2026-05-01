@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import StatusBadge from "@/components/StatusBadge";
 import { Shield } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+
 
 const FILTERS = [
   { label: "All",      value: "ALL",      endpoint: "http://localhost:1010/api/reports/user/get-all" },
@@ -21,6 +24,8 @@ const AdminDashboard = () => {
   const [loadingId, setLoadingId]   = useState(null);
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [fetching, setFetching]     = useState(false);
+  const navigate = useNavigate();
+
 
   const fetchReports = async (filter = "ALL") => {
     const target = FILTERS.find((f) => f.value === filter);
@@ -131,21 +136,28 @@ const AdminDashboard = () => {
                     <td className="p-4">
                       <div className="flex gap-2">
                         <button
+                        onClick={() => navigate(`/verify/${report.id}`)}
+                          // onClick={() => navigate("/verify")}
+                          className="px-3 py-1 text-xs bg-green-500 text-white rounded 
+                                     disabled:opacity-40 disabled:cursor-not-allowed hover:bg-green-600 transition-colors">
+                           Verify
+                        </button>
+                        {/* <button
                           onClick={() => handleStatusChange(report.id, "APPROVED")}
                           disabled={loadingId === report.id || report.status === "APPROVED"}
                           className="px-3 py-1 text-xs bg-green-500 text-white rounded 
                                      disabled:opacity-40 disabled:cursor-not-allowed hover:bg-green-600 transition-colors"
                         >
                           {loadingId === report.id ? "..." : "Approve"}
-                        </button>
-                        <button
+                        </button> */}
+                        {/* <button
                           onClick={() => handleStatusChange(report.id, "REJECTED")}
                           disabled={loadingId === report.id || report.status === "REJECTED"}
                           className="px-3 py-1 text-xs bg-red-500 text-white rounded 
                                      disabled:opacity-40 disabled:cursor-not-allowed hover:bg-red-600 transition-colors"
                         >
                           {loadingId === report.id ? "..." : "Reject"}
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -160,6 +172,19 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
 // import { useEffect, useState } from "react";
 // import axios from "axios";
 // import StatusBadge from "@/components/StatusBadge";
