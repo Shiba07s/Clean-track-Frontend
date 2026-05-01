@@ -60,7 +60,7 @@ const Verify = () => {
       );
 
       alert("Report Approved Successfully");
-      navigate("/admin-dashboard");
+      navigate("/admin");
     } catch (error) {
       console.error(error);
       alert("Failed to approve report");
@@ -79,7 +79,7 @@ const Verify = () => {
       );
 
       alert("Report Rejected");
-      navigate("/admin-dashboard");
+      navigate("/admin");
     } catch (error) {
       console.error(error);
       alert("Failed to reject report");
@@ -89,50 +89,38 @@ const Verify = () => {
   };
 
   // Upload After Photo - FIXED VERSION
-  const uploadAfterPhoto = async () => {
-    if (!afterImage) {
-      alert("Please select an image first");
-      return;
-    }
+const uploadAfterPhoto = async () => {
+  if (!afterImage) {
+    alert("Select image first");
+    return;
+  }
 
-    try {
-      setActionLoading(true);
+  try {
+    setActionLoading(true);
 
-      const formData = new FormData();
-      formData.append("image", afterImage);
+    const formData = new FormData();
+    formData.append("image", afterImage);
 
-      // Important: Set proper headers for multipart/form-data
-      const response = await axios.put(
-        `http://localhost:1010/api/admin/upload-after-photo/${id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+    await axios.post(
+      `http://localhost:1010/api/reports/upload-after-photo/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      );
-
-      alert("After Cleaning Photo Uploaded Successfully");
-
-      // Clear the file input
-      setAfterImage(null);
-      
-      // Reset file input element
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-      if (fileInput) {
-        fileInput.value = "";
       }
+    );
 
-      // Refresh report data
-      await fetchReport();
-    } catch (error: any) {
-      console.error("Upload Error:", error);
-      const errorMessage = error.response?.data?.message || "Failed to upload image";
-      alert(errorMessage);
-    } finally {
-      setActionLoading(false);
-    }
-  };
+    alert("Uploaded Successfully");
+    fetchReport();
+
+  } catch (error) {
+    console.error(error);
+    alert("Upload failed");
+  } finally {
+    setActionLoading(false);
+  }
+};
 
   if (loading) {
     return (

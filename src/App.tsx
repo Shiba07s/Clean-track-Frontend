@@ -19,8 +19,8 @@ import ReportDetails from "@/pages/ReportDetails";
 import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/NotFound";
 import LandingPage from "./pages/LandingPage";
-import Verify from "./pages/verifiy";
-
+import Verify from "./pages/Verifiy";
+ 
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -43,8 +43,7 @@ const App = () => (
               <Route path="/my-reports" element={<MyReports />} />
               <Route path="/report/:id" element={<ReportDetails />} />
               <Route path="/admin" element={<AdminDashboard />} />
-              {/* <Route path="/verify" element={<Verify />} /> */}
-              <Route path="/verify/:id" element={<Verify />} />
+               <Route path="/verify/:id" element={<Verify />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

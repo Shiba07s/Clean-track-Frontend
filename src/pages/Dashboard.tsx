@@ -2,22 +2,51 @@
  * User Dashboard Page
  * Shows user statistics (cards) and recent complaints list.
  */
+import { useEffect, useState } from "react";
 import { FileText, Clock, CheckCircle, Award } from "lucide-react";
 import { Link } from "react-router-dom";
-import { mockUser, mockReports } from "@/data/mockData";
+import axios from "axios";
 import StatCard from "@/components/StatCard";
 import StatusBadge from "@/components/StatusBadge";
 
 const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const userName = user?.fullName;
+  // Fetch user reports from API
+  useEffect(() => {
+    const fetchUserReports = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const response = await axios.get(
+            `http://localhost:1010/api/reports/user/${userId}`
+          );
+          setReports(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user reports:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserReports();
+  }, []);
+
+  // Calculate stats from reports data
+  const totalReports = reports.length;
+  const pendingReports = reports.filter((r) => r.status === "PENDING").length;
+  const resolvedReports = reports.filter((r) => r.status === "APPROVED").length;
+  const rewardPoints = reports.length > 0 ? reports[0].user.rewardPoints : 0;
+
   // Stats to display in cards
   const stats = [
-    { icon: FileText, label: "Total Reports", value: mockUser.totalReports, color: "bg-accent" },
-    { icon: Clock, label: "Pending Reports", value: mockUser.pendingReports, color: "bg-warning/20" },
-    { icon: CheckCircle, label: "Resolved Reports", value: mockUser.resolvedReports, color: "bg-success/20" },
-    { icon: Award, label: "Reward Points", value: mockUser.rewardPoints, color: "bg-accent" },
+    { icon: FileText, label: "Total Reports", value: totalReports, color: "bg-accent" },
+    { icon: Clock, label: "Pending Reports", value: pendingReports, color: "bg-warning/20" },
+    { icon: CheckCircle, label: "Resolved Reports", value: resolvedReports, color: "bg-success/20" },
+    { icon: Award, label: "Reward Points", value: rewardPoints, color: "bg-accent" },
   ];
 
   return (
@@ -29,11 +58,18 @@ const userName = user?.fullName;
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        {stats.map((stat) => (
-          <StatCard key={stat.label} {...stat} />
-        ))}
-      </div>
+      {loading ? (
+        <div className="p-10 text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="mt-2">Loading your stats...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          {stats.map((stat) => (
+            <StatCard key={stat.label} {...stat} />
+          ))}
+        </div>
+      )}
 
       {/* Recent Reports Table */}
       <div className="bg-card border rounded-lg shadow-sm">
@@ -58,22 +94,38 @@ const userName = user?.fullName;
               </tr>
             </thead>
             <tbody>
-              {mockReports.slice(0, 5).map((report) => (
-                <tr key={report.id} className="border-b last:border-0 hover:bg-muted/30">
-                  <td className="p-4 text-sm">#{report.id}</td>
-                  <td className="p-4 text-sm">{report.location}</td>
-                  <td className="p-4 text-sm">{report.date}</td>
-                  <td className="p-4"><StatusBadge status={report.status} /></td>
-                  <td className="p-4">
-                    <Link
-                      to={`/report/${report.id}`}
-                      className="text-primary text-sm font-medium hover:underline"
-                    >
-                      View
-                    </Link>
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="p-4 text-center text-muted-foreground">
+                    Loading reports...
                   </td>
                 </tr>
-              ))}
+              ) : reports.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-4 text-center text-muted-foreground">
+                    No reports found
+                  </td>
+                </tr>
+              ) : (
+                reports.slice(0, 5).map((report) => (
+                  <tr key={report.id} className="border-b last:border-0 hover:bg-muted/30">
+                    <td className="p-4 text-sm">#{report.id}</td>
+                    <td className="p-4 text-sm">{report.location}</td>
+                    <td className="p-4 text-sm">
+                      {new Date(report.createdAt).toLocaleDateString("en-US")}
+                    </td>
+                    <td className="p-4"><StatusBadge status={report.status} /></td>
+                    <td className="p-4">
+                      <Link
+                        to={`/report/${report.id}`}
+                        className="text-primary text-sm font-medium hover:underline"
+                      >
+                        View
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

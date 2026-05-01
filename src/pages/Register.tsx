@@ -15,6 +15,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("USER");
   const [error, setError] = useState("");
 
 
@@ -22,7 +23,7 @@ const Register = () => {
   e.preventDefault();
 
   // Basic validations
-  if (!name || !email || !password || !confirmPassword) {
+  if (!name || !email || !password || !confirmPassword || !role) {
     setError("Please fill in all fields.");
     return;
   }
@@ -43,7 +44,8 @@ const Register = () => {
       {
         fullName: name,
         email: email,
-        password: password
+        password: password,
+        role: role
       }
     );
 
@@ -147,6 +149,18 @@ const Register = () => {
               placeholder="Re-enter your password"
               className="w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Role</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="USER">User</option>
+              <option value="ADMIN">Admin</option>
+            </select>
           </div>
 
           <button
