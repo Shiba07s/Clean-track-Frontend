@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import StatCard from "@/components/StatCard";
 import StatusBadge from "@/components/StatusBadge";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -21,7 +22,7 @@ const Dashboard = () => {
         const userId = localStorage.getItem("userId");
         if (userId) {
           const response = await axios.get(
-            `http://localhost:1010/api/reports/user/${userId}`
+            API_ENDPOINTS.REPORTS.GET_USER_REPORTS(userId)
           );
           setReports(response.data);
         }

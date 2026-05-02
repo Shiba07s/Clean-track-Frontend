@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, MapPin } from "lucide-react";
 import axios from "axios";
+import { API_ENDPOINTS, API_KEYS } from "@/lib/api-config";
 
 const ReportPollution = () => {
   const navigate = useNavigate();
@@ -51,10 +52,10 @@ const [imageFile, setImageFile] = useState<File | null>(null);
 
   try {
     const res = await axios.get(
-      "http://api.positionstack.com/v1/forward",
+      API_ENDPOINTS.EXTERNAL.LOCATION_SUGGEST,
       {
         params: {
-          access_key: "79486de0fe2800dfec366e0aea64c733",
+          access_key: API_KEYS.LOCATION_STACK,
           query: value,
           limit: 5
         }
@@ -87,7 +88,7 @@ const [imageFile, setImageFile] = useState<File | null>(null);
     formData.append("location", location);
 
     const response = await axios.post(
-      `http://localhost:1010/api/reports/create/${userId}`,
+      API_ENDPOINTS.REPORTS.CREATE_REPORT(userId),
       formData,
       {
         headers: {

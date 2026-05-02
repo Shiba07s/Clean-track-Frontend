@@ -7,6 +7,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import StatusBadge from "@/components/StatusBadge";
 import { MapPin, Calendar, Award, ArrowLeft } from "lucide-react";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 const ReportDetails = () => {
   const { id } = useParams();
@@ -18,7 +19,7 @@ const ReportDetails = () => {
     const fetchReports = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:1010/api/reports/user/get-all`
+          API_ENDPOINTS.REPORTS.GET_ALL_REPORTS
         );
         const reports = response.data;
         const foundReport = reports.find((r) => r.id === Number(id));

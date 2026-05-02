@@ -8,6 +8,7 @@ import StatusBadge from "@/components/StatusBadge";
 import { MapPin, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 const MyReports = () => {
 
@@ -23,7 +24,7 @@ const MyReports = () => {
       try {
 
         const response = await axios.get(
-          `http://localhost:1010/api/reports/user/${userId}`
+          API_ENDPOINTS.REPORTS.GET_USER_REPORTS(userId)
         );
 
         setReports(response.data);

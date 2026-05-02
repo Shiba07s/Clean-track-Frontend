@@ -9,14 +9,15 @@ import axios from "axios";
 import StatusBadge from "@/components/StatusBadge";
 import { Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 
 
 const FILTERS = [
-  { label: "All",      value: "ALL",      endpoint: "http://localhost:1010/api/reports/user/get-all" },
-  { label: "Pending",  value: "PENDING",  endpoint: "http://localhost:1010/api/admin/pending/reports" },
-  { label: "Approved", value: "APPROVED", endpoint: "http://localhost:1010/api/admin/approve/reports" },
-  { label: "Rejected", value: "REJECTED", endpoint: "http://localhost:1010/api/admin/reject/reports" },
+  { label: "All",      value: "ALL",      endpoint: API_ENDPOINTS.REPORTS.GET_ALL_REPORTS },
+  { label: "Pending",  value: "PENDING",  endpoint: API_ENDPOINTS.ADMIN.GET_PENDING_REPORTS },
+  { label: "Approved", value: "APPROVED", endpoint: API_ENDPOINTS.ADMIN.GET_APPROVED_REPORTS },
+  { label: "Rejected", value: "REJECTED", endpoint: API_ENDPOINTS.ADMIN.GET_REJECTED_REPORTS },
 ];
 
 const AdminDashboard = () => {
@@ -48,9 +49,9 @@ const AdminDashboard = () => {
     setLoadingId(id);
     try {
       if (newStatus === "APPROVED") {
-        await axios.put(`http://localhost:1010/api/admin/approve/${id}`);
+        await axios.put(API_ENDPOINTS.ADMIN.APPROVE_REPORT(id));
       } else if (newStatus === "REJECTED") {
-        await axios.put(`http://localhost:1010/api/admin/reject/${id}`);
+        await axios.put(API_ENDPOINTS.ADMIN.REJECT_REPORT(id));
       }
       // Re-fetch current filter after action so list stays in sync
       await fetchReports(activeFilter);

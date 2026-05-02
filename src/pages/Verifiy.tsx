@@ -10,6 +10,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import StatusBadge from "@/components/StatusBadge";
 import { Shield, ArrowLeft } from "lucide-react";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 interface Report {
   id: number;
@@ -34,7 +35,7 @@ const Verify = () => {
   const fetchReport = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:1010/api/reports/${id}`
+        API_ENDPOINTS.REPORTS.GET_REPORT_BY_ID(id!)
       );
       setReport(response.data);
     } catch (error) {
@@ -56,7 +57,7 @@ const Verify = () => {
       setActionLoading(true);
 
       await axios.put(
-        `http://localhost:1010/api/admin/approve/${id}`
+        API_ENDPOINTS.ADMIN.APPROVE_REPORT(id!)
       );
 
       alert("Report Approved Successfully");
@@ -75,7 +76,7 @@ const Verify = () => {
       setActionLoading(true);
 
       await axios.put(
-        `http://localhost:1010/api/admin/reject/${id}`
+        API_ENDPOINTS.ADMIN.REJECT_REPORT(id!)
       );
 
       alert("Report Rejected");
@@ -102,7 +103,7 @@ const uploadAfterPhoto = async () => {
     formData.append("image", afterImage);
 
     await axios.post(
-      `http://localhost:1010/api/reports/upload-after-photo/${id}`,
+      API_ENDPOINTS.REPORTS.UPLOAD_AFTER_PHOTO(id!),
       formData,
       {
         headers: {

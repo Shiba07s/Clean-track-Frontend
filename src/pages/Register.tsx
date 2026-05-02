@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Leaf } from "lucide-react";
 import axios from "axios";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Register = () => {
 
   try {
     const response = await axios.post(
-      "http://localhost:1010/api/auth/register",
+      API_ENDPOINTS.AUTH.REGISTER,
       {
         fullName: name,
         email: email,
