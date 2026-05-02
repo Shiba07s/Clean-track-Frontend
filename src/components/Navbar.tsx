@@ -4,22 +4,35 @@
  */
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Leaf, Menu, X, User } from "lucide-react";
-import { useState } from "react";
+import { Leaf, Menu, X, User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   // Get logged-in user data
-const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-const userName = user?.fullName;
-const userRole = user?.role;
+  const userName = user?.fullName;
+  const userRole = user?.role;
 
-console.log(userName);
-  // const userRole = localStorage.getItem("role");
+  console.log(userName);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Check active route
   const isActive = (path: string) => location.pathname === path;
@@ -30,13 +43,20 @@ console.log(userName);
     navigate("/login");
   };
 
-  // Navigation links
-  const links = [
+  // Navigation links - base links visible to everyone
+  const baseLinks = [
     { path: "/", label: "Home" },
+  ];
+
+  // Protected links - only visible to authenticated users
+  const protectedLinks = [
     { path: "/dashboard", label: "Dashboard" },
     { path: "/report", label: "Report Pollution" },
     { path: "/my-reports", label: "My Reports" },
   ];
+
+  // Combine links based on authentication status
+  const links = userName ? [...baseLinks, ...protectedLinks] : baseLinks;
 
   return (
     <nav className="bg-primary text-primary-foreground shadow-md">
@@ -80,22 +100,89 @@ console.log(userName);
               </Link>
             )}
 
-            {/* Profile Section */}
+            {/* Profile Section - Desktop */}
             {userName ? (
-              <div className="flex items-center gap-3 ml-4">
-
-                <div className="flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  <span className="text-sm font-medium">{userName}</span>
-                </div>
-
+              <div className="relative ml-4" ref={profileMenuRef}>
+                {/* Profile Button */}
                 <button
-                  onClick={handleLogout}
-                  className="text-sm bg-red-500 px-3 py-1 rounded hover:bg-red-600"
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-primary-foreground/10 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30"
                 >
-                  Logout
+                  {/* Avatar */}
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 border border-white/40 hover:bg-white/30 transition-colors">
+                    <span className="text-sm font-semibold text-white">
+                      {userName?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+
+                  {/* Name and Role */}
+                  <div className="hidden sm:flex flex-col items-start">
+                    <span className="text-sm font-semibold text-white">{userName}</span>
+                    <span className="text-xs text-white/70 capitalize">{userRole?.toLowerCase()}</span>
+                  </div>
+
+                  {/* Dropdown Chevron */}
+                  <ChevronDown
+                    className={`w-4 h-4 text-white/70 transition-transform duration-200 ${
+                      isProfileOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
 
+                {/* Dropdown Menu */}
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-primary to-primary/80 px-4 py-3 text-white">
+                      <p className="font-semibold text-sm">{userName}</p>
+                      <p className="text-xs text-white/80 capitalize mt-1">
+                        {userRole === "ADMIN" ? "Administrator" : "User"}
+                      </p>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="py-1">
+                      {/* Profile Option */}
+                      {/* <button
+                        onClick={() => {
+                          navigate("/admin");
+                          setIsProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
+                      >
+                        <User className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                        <span className="group-hover:font-medium">View Profile</span>
+                      </button> */}
+
+                      {/* Settings Option */}
+                      {/* <button
+                        onClick={() => {
+                          navigate("/settings");
+                          setIsProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
+                      >
+                        <Settings className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                        <span className="group-hover:font-medium">Settings</span>
+                      </button> */}
+
+                      {/* Divider */}
+                      <div className="my-1 border-t border-gray-200"></div>
+
+                      {/* Logout Option */}
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setIsProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors group"
+                      >
+                        <LogOut className="w-4 h-4 text-red-400 group-hover:text-red-600" />
+                        <span className="group-hover:font-medium">Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <Link
@@ -150,20 +237,55 @@ console.log(userName);
 
             {/* Profile Mobile */}
             {userName && (
-              <div className="px-3 py-2 space-y-2">
-
-                <div className="flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  <span>{userName}</span>
+              <div className="px-3 py-3 border-t border-primary-foreground/20 mt-2 space-y-2">
+                {/* User Header */}
+                <div className="flex items-center gap-3 pb-2">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-foreground/20 border border-primary-foreground/40">
+                    <span className="text-sm font-semibold">
+                      {userName?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{userName}</p>
+                    <p className="text-xs text-primary-foreground/70 capitalize">
+                      {userRole === "ADMIN" ? "Administrator" : "User"}
+                    </p>
+                  </div>
                 </div>
 
+                {/* Mobile Menu Items */}
                 <button
-                  onClick={handleLogout}
-                  className="text-sm bg-red-500 px-3 py-1 rounded hover:bg-red-600"
+                  onClick={() => {
+                    navigate("/profile");
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
                 >
-                  Logout
+                  <User className="w-4 h-4" />
+                  <span>View Profile</span>
                 </button>
 
+                <button
+                  onClick={() => {
+                    navigate("/settings");
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Settings</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-red-200 hover:bg-red-500/20 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
               </div>
             )}
 
